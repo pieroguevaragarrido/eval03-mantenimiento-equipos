@@ -1,0 +1,59 @@
+# ============================================================
+# cliente-service  |  Evaluacion 03 - Mantenimiento de equipos
+# Perfil activo por defecto: dev  (cambiar con PROFILE_ACTIVE=prod)
+# ============================================================
+spring:
+  application:
+    name: cliente-service
+  profiles:
+    active: ${PROFILE_ACTIVE:dev}
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+---
+# ---------------------------- DEV ----------------------------
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/bd_cliente?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Lima
+    username: root
+    password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+server:
+  port: 8081
+logging:
+  level:
+    root: INFO
+    com.tecsup.cliente: DEBUG
+
+---
+# ---------------------------- PROD ---------------------------
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/bd_cliente?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Lima}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+server:
+  port: ${SERVER_PORT:8081}
+logging:
+  level:
+    root: WARN
+    com.tecsup.cliente: INFO
+

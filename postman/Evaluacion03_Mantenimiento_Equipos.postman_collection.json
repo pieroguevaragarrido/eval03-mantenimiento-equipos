@@ -1,0 +1,931 @@
+{
+  "info": {
+    "name": "Evaluacion 03 - Mantenimiento de equipos",
+    "description": "Ejecutar en orden (Collection Runner). Requiere los 3 servicios levantados (8081, 8082, 8083).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. cliente-service (8081)",
+      "item": [
+        {
+          "name": "01 Crear cliente (OK 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set('clienteId', pm.response.json().id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('doc', String(Date.now()).slice(-8));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": \"{{doc}}\",\n  \"nombres\": \"Piero\",\n  \"apellidos\": \"Guevara Garrido\",\n  \"correo\": \"piero@example.com\",\n  \"telefono\": \"999111222\"\n}"
+            }
+          }
+        },
+        {
+          "name": "02 Listar clientes (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes"
+            }
+          }
+        },
+        {
+          "name": "03 Buscar cliente por ID (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes/{{clienteId}}"
+            }
+          }
+        },
+        {
+          "name": "04 Actualizar cliente (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes/{{clienteId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": \"{{doc}}\",\n  \"nombres\": \"Piero\",\n  \"apellidos\": \"Guevara Garrido\",\n  \"correo\": \"piero@example.com\",\n  \"telefono\": \"955444333\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05 Crear cliente con datos invalidos (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": \"123\",\n  \"nombres\": \"\",\n  \"apellidos\": \"X\",\n  \"correo\": \"no-es-correo\",\n  \"telefono\": \"abc\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06 Crear cliente con documento repetido (ERROR 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documento\": \"{{doc}}\",\n  \"nombres\": \"Piero\",\n  \"apellidos\": \"Guevara Garrido\",\n  \"correo\": \"piero@example.com\",\n  \"telefono\": \"999111222\"\n}"
+            }
+          }
+        },
+        {
+          "name": "07 Buscar cliente inexistente (ERROR 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes/99999"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. equipo-service (8082)",
+      "item": [
+        {
+          "name": "01 Crear equipo (OK 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set('equipoId', pm.response.json().id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('cod', 'EQ-' + String(Date.now()).slice(-6));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"{{cod}}\",\n  \"tipo\": \"Laptop\",\n  \"marca\": \"Lenovo\",\n  \"modelo\": \"ThinkPad E14\",\n  \"idCliente\": {{clienteId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "02 Listar equipos (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos"
+            }
+          }
+        },
+        {
+          "name": "03 Buscar equipo por ID (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos/{{equipoId}}"
+            }
+          }
+        },
+        {
+          "name": "04 Equipos de un cliente (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos/cliente/{{clienteId}}"
+            }
+          }
+        },
+        {
+          "name": "05 Actualizar equipo (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos/{{equipoId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"{{cod}}\",\n  \"tipo\": \"Laptop\",\n  \"marca\": \"Lenovo\",\n  \"modelo\": \"ThinkPad E15\",\n  \"idCliente\": {{clienteId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "06 Crear equipo con cliente inexistente (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"EQ-XXXX1\",\n  \"tipo\": \"Laptop\",\n  \"marca\": \"Lenovo\",\n  \"modelo\": \"ThinkPad E14\",\n  \"idCliente\": 99999\n}"
+            }
+          }
+        },
+        {
+          "name": "07 Crear equipo con datos invalidos (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"\",\n  \"tipo\": \"\",\n  \"marca\": \"\",\n  \"modelo\": \"\",\n  \"idCliente\": -5\n}"
+            }
+          }
+        },
+        {
+          "name": "08 Crear equipo con codigo repetido (ERROR 409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 409', function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"{{cod}}\",\n  \"tipo\": \"Laptop\",\n  \"marca\": \"Lenovo\",\n  \"modelo\": \"ThinkPad E14\",\n  \"idCliente\": {{clienteId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "09 Buscar equipo inexistente (ERROR 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos/99999"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. orden-servicio-service (8083)",
+      "item": [
+        {
+          "name": "01 Crear orden de servicio (OK 201, estado RECIBIDO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 201', function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set('ordenId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idEquipo\": {{equipoId}},\n  \"descripcion\": \"No enciende, revisar fuente de poder\",\n  \"costoEstimado\": 120.50\n}"
+            }
+          }
+        },
+        {
+          "name": "02 Listar ordenes (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio"
+            }
+          }
+        },
+        {
+          "name": "03 Buscar orden por ID (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}"
+            }
+          }
+        },
+        {
+          "name": "04 Cambiar estado a EN_REPARACION (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Estado EN_REPARACION', function () { pm.expect(pm.response.json().estado).to.eql('EN_REPARACION'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}/estado"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"EN_REPARACION\"\n}"
+            }
+          }
+        },
+        {
+          "name": "05 Cambiar estado a LISTO (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}/estado"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"LISTO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "06 Cambiar estado a ENTREGADO (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}/estado"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"ENTREGADO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "07 Filtrar ordenes por estado ENTREGADO (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio?estado=ENTREGADO"
+            }
+          }
+        },
+        {
+          "name": "08 Actualizar orden completa (OK 200)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idEquipo\": {{equipoId}},\n  \"descripcion\": \"No enciende, revisar fuente de poder\",\n  \"costoEstimado\": 150.00,\n  \"estado\": \"LISTO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "09 Cambiar a estado invalido (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}/estado"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"TERMINADO\"\n}"
+            }
+          }
+        },
+        {
+          "name": "10 Crear orden con costo negativo y sin descripcion (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idEquipo\": {{equipoId}},\n  \"descripcion\": \"\",\n  \"costoEstimado\": -10\n}"
+            }
+          }
+        },
+        {
+          "name": "11 Crear orden con equipo inexistente (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idEquipo\": 99999,\n  \"descripcion\": \"No enciende, revisar fuente de poder\",\n  \"costoEstimado\": 120.50\n}"
+            }
+          }
+        },
+        {
+          "name": "12 Buscar orden inexistente (ERROR 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/99999"
+            }
+          }
+        },
+        {
+          "name": "13 Filtrar con estado invalido (ERROR 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio?estado=XYZ"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Limpieza (DELETE)",
+      "item": [
+        {
+          "name": "01 Eliminar orden (OK 204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{orden_url}}/api/ordenes-servicio/{{ordenId}}"
+            }
+          }
+        },
+        {
+          "name": "02 Eliminar equipo (OK 204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{equipo_url}}/api/equipos/{{equipoId}}"
+            }
+          }
+        },
+        {
+          "name": "03 Eliminar cliente (OK 204)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 204', function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes/{{clienteId}}"
+            }
+          }
+        },
+        {
+          "name": "04 Eliminar cliente ya borrado (ERROR 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Codigo HTTP 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{cliente_url}}/api/clientes/{{clienteId}}"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "cliente_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "equipo_url",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "orden_url",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "clienteId",
+      "value": ""
+    },
+    {
+      "key": "equipoId",
+      "value": ""
+    },
+    {
+      "key": "ordenId",
+      "value": ""
+    },
+    {
+      "key": "doc",
+      "value": ""
+    },
+    {
+      "key": "cod",
+      "value": ""
+    }
+  ]
+}
